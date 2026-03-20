@@ -258,6 +258,7 @@ export type RestRequestRestType =
 export const RestRequestRestType = {
   short_rest: "short_rest",
   long_rest: "long_rest",
+  dawn: "dawn",
 } as const;
 
 export interface RestRequest {

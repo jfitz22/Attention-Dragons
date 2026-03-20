@@ -108,7 +108,7 @@ export const TriggerRestParams = zod.object({
 });
 
 export const TriggerRestBody = zod.object({
-  restType: zod.enum(["short_rest", "long_rest"]),
+  restType: zod.enum(["short_rest", "long_rest", "dawn"]),
 });
 
 export const TriggerRestResponseItem = zod.object({

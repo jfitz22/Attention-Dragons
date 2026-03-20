@@ -130,6 +130,12 @@ export function AddItemDialog({ characterId, open, onOpenChange, editingItem }: 
 
   const onSubmit = (data: FormValues) => {
     const isEquipped = data.location === CreateItemRequestLocation.equipped;
+    const nextCurrentCharges =
+      data.maxCharges == null
+        ? null
+        : isEditing
+          ? Math.min(editingItem.currentCharges ?? data.maxCharges, data.maxCharges)
+          : data.maxCharges;
 
     const createPayload: CreateItemRequest = {
       name: data.name,
@@ -142,7 +148,7 @@ export function AddItemDialog({ characterId, open, onOpenChange, editingItem }: 
       rarity: data.rarity ?? null,
       maxCharges: data.maxCharges ?? null,
       rechargeOn: data.rechargeOn ?? null,
-      currentCharges: data.maxCharges ?? null,
+      currentCharges: nextCurrentCharges,
       quantity: data.quantity,
       notes: data.notes ?? null,
     };
@@ -182,7 +188,7 @@ export function AddItemDialog({ characterId, open, onOpenChange, editingItem }: 
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Category</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Select a category" />
@@ -295,13 +301,20 @@ export function AddItemDialog({ characterId, open, onOpenChange, editingItem }: 
                 <FormItem>
                   <FormLabel>Item Art (Optional)</FormLabel>
                   <div className="space-y-3 rounded-xl border border-border bg-secondary/20 p-4">
+                    <div className="space-y-2">
+                      <FormLabel className="text-xs uppercase tracking-wide text-muted-foreground">Manual image URL</FormLabel>
+                      <FormControl>
+                        <Input placeholder="https://... or /api/assets/..." {...field} value={field.value || ""} />
+                      </FormControl>
+                    </div>
+
                     {field.value ? (
                       <div className="flex items-center gap-4">
                         <div className="h-20 w-20 overflow-hidden rounded-lg border border-border bg-background">
                           <img src={field.value} alt="Selected item art" className="h-full w-full object-cover" />
                         </div>
                         <div className="min-w-0 flex-1">
-                          <p className="text-sm font-medium text-foreground">Shared pixel art selected</p>
+                          <p className="text-sm font-medium text-foreground">Current item art source</p>
                           <p className="truncate text-xs text-muted-foreground">{field.value}</p>
                         </div>
                       </div>
@@ -322,9 +335,6 @@ export function AddItemDialog({ characterId, open, onOpenChange, editingItem }: 
                       )}
                     </div>
                   </div>
-                  <FormControl>
-                    <input type="hidden" {...field} value={field.value || ""} />
-                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}

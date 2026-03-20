@@ -119,12 +119,12 @@ router.put("/:itemId", async (req, res) => {
     itemId: Number(p.itemId),
   });
   const bodyParsed = UpdateItemBody.safeParse(req.body);
-  if (!paramsParsed.success) {
-    res.status(400).json({ error: "Invalid params" });
+  if (!paramsParsed.success || !bodyParsed.success) {
+    res.status(400).json({ error: "Invalid request" });
     return;
   }
   const { itemId, characterId } = paramsParsed.data;
-  const data = bodyParsed.success ? bodyParsed.data : {};
+  const data = bodyParsed.data;
 
   const updateData: Record<string, unknown> = { updatedAt: new Date() };
   if (data.name !== undefined) updateData.name = data.name;
@@ -198,9 +198,13 @@ router.post("/:itemId/use", async (req, res) => {
   const updateData: Record<string, unknown> = { updatedAt: new Date() };
 
   if (existing.isConsumable) {
-    updateData.isConsumed = true;
-    updateData.isEquipped = false;
-    updateData.location = "stored" as ItemLocation;
+    const nextQuantity = Math.max((existing.quantity ?? 1) - 1, 0);
+    updateData.quantity = nextQuantity;
+    if (nextQuantity === 0) {
+      updateData.isConsumed = true;
+      updateData.isEquipped = false;
+      updateData.location = "stored" as ItemLocation;
+    }
   } else if (existing.currentCharges != null && existing.currentCharges > 0) {
     updateData.currentCharges = existing.currentCharges - 1;
     if (existing.rechargeOn === "never" && updateData.currentCharges === 0) {
@@ -213,7 +217,7 @@ router.post("/:itemId/use", async (req, res) => {
   const [item] = await db
     .update(itemsTable)
     .set(updateData)
-    .where(eq(itemsTable.id, parsed.data.itemId))
+    .where(and(eq(itemsTable.id, parsed.data.itemId), eq(itemsTable.characterId, parsed.data.characterId)))
     .returning();
   res.json(item);
 });

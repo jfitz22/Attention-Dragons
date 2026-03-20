@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useListJournalEntries, useCreateJournalEntry, useUpdateJournalEntry, useDeleteJournalEntry, JournalEntry, getListJournalEntriesQueryKey } from '@workspace/api-client-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
@@ -155,11 +155,14 @@ function JournalEntryDialog({ open, editing, onClose, onSave, isPending }: Journ
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
 
+  useEffect(() => {
+    if (!open) return;
+    setTitle(editing?.title ?? '');
+    setBody(editing?.body ?? '');
+  }, [open, editing]);
+
   const handleOpenChange = (o: boolean) => {
-    if (o) {
-      setTitle(editing?.title ?? '');
-      setBody(editing?.body ?? '');
-    } else {
+    if (!o) {
       onClose();
     }
   };

@@ -12,7 +12,7 @@ import { JournalSection } from '@/components/journal-section';
 import { QuestLogSection } from '@/components/quest-log-section';
 import { useDefaultParty } from '@/hooks/use-default-party';
 import { CATEGORY_MAP } from '@/lib/constants';
-import { ArrowLeft, Moon, Search, Sun, Plus, PackageOpen, Settings, Backpack, Shield, Box, ChevronDown, ChevronUp } from 'lucide-react';
+import { ArrowLeft, Moon, Search, Sun, Plus, PackageOpen, Settings, Backpack, Shield, Box, ChevronDown, ChevronUp, Archive } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Badge } from '@/components/ui/badge';
@@ -31,7 +31,7 @@ export default function CharacterHub() {
   const [openVaultCategories, setOpenVaultCategories] = useState<Record<string, boolean>>({});
 
   const { data: character, isLoading: charLoading } = useGetCharacter(id);
-  const { data: items = [], isLoading: itemsLoading } = useListItems(id);
+  const { data: items = [], isLoading: itemsLoading } = useListItems(id, { showConsumed: true });
   const { partyId } = useDefaultParty();
 
   const { mutate: triggerRest, isPending: isResting } = useTriggerRest({
@@ -64,15 +64,15 @@ export default function CharacterHub() {
   };
 
   const filteredItems = items.filter(item => {
-    if (!showConsumed && item.isConsumed) return false;
-    if (showConsumed && !item.isConsumed) return false;
     if (search && !item.name.toLowerCase().includes(search.toLowerCase())) return false;
     return true;
   });
 
-  const equippedItems = filteredItems.filter(i => i.location === 'equipped');
-  const carriedItems = filteredItems.filter(i => i.location === 'carried');
-  const storedItems = filteredItems.filter(i => i.location === 'stored');
+  const activeItems = filteredItems.filter(i => !i.isConsumed);
+  const consumedItems = filteredItems.filter(i => i.isConsumed);
+  const equippedItems = activeItems.filter(i => i.location === 'equipped');
+  const carriedItems = activeItems.filter(i => i.location === 'carried');
+  const storedItems = activeItems.filter(i => i.location === 'stored');
 
   const groupedStoredItems = storedItems.reduce((acc, item) => {
     const cat = item.category;
@@ -144,6 +144,14 @@ export default function CharacterHub() {
               >
                 <Moon className="w-4 h-4 mr-2" /> Long Rest
               </Button>
+              <Button
+                variant="outline"
+                className="flex-1 md:flex-none border-amber-400/50 text-amber-300 hover:bg-amber-400/10"
+                onClick={() => handleRest(RestRequestRestType.dawn)}
+                disabled={isResting}
+              >
+                <Sun className="w-4 h-4 mr-2" /> Dawn
+              </Button>
             </div>
             <ThemeSelector />
           </div>
@@ -162,14 +170,14 @@ export default function CharacterHub() {
           </div>
 
           <div className="flex items-center justify-between w-full lg:w-auto gap-4">
-            <Button
-              variant="ghost"
-              onClick={() => setShowConsumed(!showConsumed)}
-              className={showConsumed ? "text-primary bg-primary/10" : "text-muted-foreground"}
-            >
-              <PackageOpen className="w-4 h-4 mr-2" />
-              {showConsumed ? "Viewing Consumed" : "View Consumed"}
-            </Button>
+              <Button
+                variant="ghost"
+                onClick={() => setShowConsumed(!showConsumed)}
+                className={showConsumed ? "text-primary bg-primary/10" : "text-muted-foreground"}
+              >
+                <PackageOpen className="w-4 h-4 mr-2" />
+              {showConsumed ? "Hide Consumed" : "View Consumed"}
+              </Button>
             <Button variant="magical" onClick={() => setIsAddItemOpen(true)}>
               <Plus className="w-4 h-4 mr-2" /> Add Item
             </Button>
@@ -180,7 +188,7 @@ export default function CharacterHub() {
           <div className="flex justify-center py-24">
             <div className="animate-spin w-12 h-12 border-4 border-primary border-t-transparent rounded-full" />
           </div>
-        ) : filteredItems.length === 0 ? (
+        ) : activeItems.length === 0 && consumedItems.length === 0 ? (
           <div className="text-center py-24 bg-card/30 rounded-2xl border border-dashed border-border">
             <PackageOpen className="w-16 h-16 text-muted-foreground/50 mx-auto mb-4" />
             <h3 className="text-2xl font-display text-muted-foreground mb-2">No items found</h3>
@@ -273,6 +281,21 @@ export default function CharacterHub() {
                     );
                   })}
                 </div>
+              </div>
+            )}
+
+            {showConsumed && consumedItems.length > 0 && (
+              <div className="space-y-6">
+                <h2 className="text-2xl font-display font-bold border-b border-border/50 pb-2 text-muted-foreground flex items-center gap-2">
+                  <Archive className="w-6 h-6" /> Consumed
+                </h2>
+                <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <AnimatePresence mode="popLayout">
+                    {consumedItems.map(item => (
+                      <ItemCard key={item.id} item={item} onEdit={handleEdit} />
+                    ))}
+                  </AnimatePresence>
+                </motion.div>
               </div>
             )}
           </div>

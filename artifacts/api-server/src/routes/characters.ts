@@ -111,7 +111,10 @@ router.post("/:characterId/rest", async (req, res) => {
     }
     let shouldRecharge = false;
     if (item.rechargeOn === "short_rest" || item.rechargeOn === "long_rest") {
-      shouldRecharge = restType === "long_rest" || item.rechargeOn === restType;
+      shouldRecharge =
+        restType === "long_rest" || item.rechargeOn === restType;
+    } else if (item.rechargeOn === "dawn") {
+      shouldRecharge = restType === "dawn";
     }
     if (shouldRecharge && item.currentCharges < item.maxCharges) {
       const [updated] = await db

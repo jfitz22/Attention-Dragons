@@ -163,13 +163,20 @@ export function EditCharacterDialog({ character, open, onOpenChange }: EditChara
             <FormItem>
               <FormLabel>Portrait Art</FormLabel>
               <div className="space-y-3 rounded-xl border border-border bg-secondary/20 p-4">
+                <div className="space-y-2">
+                  <FormLabel className="text-xs uppercase tracking-wide text-muted-foreground">Manual image URL</FormLabel>
+                  <FormControl>
+                    <Input placeholder="https://... or /api/assets/..." {...field} value={field.value || ""} />
+                  </FormControl>
+                </div>
+
                 {field.value ? (
                   <div className="flex items-center gap-4">
                     <div className="h-20 w-20 overflow-hidden rounded-lg border border-border bg-background">
                       <img src={field.value} alt="Selected portrait" className="h-full w-full object-cover" />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="text-sm font-medium text-foreground">Shared library portrait selected</p>
+                      <p className="text-sm font-medium text-foreground">Current portrait source</p>
                       <p className="truncate text-xs text-muted-foreground">{field.value}</p>
                     </div>
                   </div>
@@ -190,9 +197,6 @@ export function EditCharacterDialog({ character, open, onOpenChange }: EditChara
                   )}
                 </div>
               </div>
-              <FormControl>
-                <input type="hidden" {...field} value={field.value || ""} />
-              </FormControl>
               <FormMessage />
             </FormItem>
           )}
