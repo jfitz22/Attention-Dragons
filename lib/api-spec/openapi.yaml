@@ -1,0 +1,1061 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: Attention Dragons API specification
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: parties
+    description: Party operations
+  - name: characters
+    description: Character operations
+  - name: items
+    description: Inventory item operations
+  - name: journal
+    description: Journal entry operations
+  - name: quests
+    description: Quest log operations
+  - name: dm
+    description: Dungeon Master operations
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      description: Returns server health status
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+
+  /characters:
+    get:
+      operationId: listCharacters
+      tags: [characters]
+      summary: List all characters
+      responses:
+        "200":
+          description: List of characters
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Character"
+    post:
+      operationId: createCharacter
+      tags: [characters]
+      summary: Create a new character
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateCharacterRequest"
+      responses:
+        "201":
+          description: Character created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Character"
+
+  /characters/{characterId}:
+    get:
+      operationId: getCharacter
+      tags: [characters]
+      summary: Get a character by ID
+      parameters:
+        - name: characterId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Character found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Character"
+        "404":
+          description: Character not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    put:
+      operationId: updateCharacter
+      tags: [characters]
+      summary: Update a character
+      parameters:
+        - name: characterId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateCharacterRequest"
+      responses:
+        "200":
+          description: Character updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Character"
+
+  /characters/{characterId}/rest:
+    post:
+      operationId: triggerRest
+      tags: [characters]
+      summary: Trigger a rest for a character (recharges items)
+      parameters:
+        - name: characterId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RestRequest"
+      responses:
+        "200":
+          description: Rest triggered, returns updated items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/InventoryItem"
+
+  /characters/{characterId}/items:
+    get:
+      operationId: listItems
+      tags: [items]
+      summary: List all items for a character
+      parameters:
+        - name: characterId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: category
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: search
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: showConsumed
+          in: query
+          required: false
+          schema:
+            type: boolean
+      responses:
+        "200":
+          description: List of items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/InventoryItem"
+    post:
+      operationId: createItem
+      tags: [items]
+      summary: Add a new item to a character's inventory
+      parameters:
+        - name: characterId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateItemRequest"
+      responses:
+        "201":
+          description: Item created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InventoryItem"
+
+  /characters/{characterId}/items/{itemId}:
+    get:
+      operationId: getItem
+      tags: [items]
+      summary: Get a specific item
+      parameters:
+        - name: characterId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: itemId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Item found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InventoryItem"
+        "404":
+          description: Item not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    put:
+      operationId: updateItem
+      tags: [items]
+      summary: Update an item
+      parameters:
+        - name: characterId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: itemId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateItemRequest"
+      responses:
+        "200":
+          description: Item updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InventoryItem"
+    delete:
+      operationId: deleteItem
+      tags: [items]
+      summary: Delete an item
+      parameters:
+        - name: characterId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: itemId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Item deleted
+
+  /characters/{characterId}/items/{itemId}/use:
+    post:
+      operationId: useItem
+      tags: [items]
+      summary: Use/consume a charge or fully consume an item
+      parameters:
+        - name: characterId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: itemId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Item used
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InventoryItem"
+
+  /characters/{characterId}/items/{itemId}/location:
+    post:
+      operationId: moveItem
+      tags: [items]
+      summary: Move an item to a different location (equipped/carried/stored)
+      parameters:
+        - name: characterId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: itemId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MoveItemRequest"
+      responses:
+        "200":
+          description: Item location updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InventoryItem"
+
+  /characters/{characterId}/journal:
+    get:
+      operationId: listJournalEntries
+      tags: [journal]
+      summary: List all journal entries for a character
+      parameters:
+        - name: characterId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of journal entries
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/JournalEntry"
+    post:
+      operationId: createJournalEntry
+      tags: [journal]
+      summary: Create a new journal entry
+      parameters:
+        - name: characterId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateJournalEntryRequest"
+      responses:
+        "201":
+          description: Journal entry created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JournalEntry"
+
+  /characters/{characterId}/journal/{entryId}:
+    get:
+      operationId: getJournalEntry
+      tags: [journal]
+      summary: Get a specific journal entry
+      parameters:
+        - name: characterId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: entryId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Journal entry found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JournalEntry"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    put:
+      operationId: updateJournalEntry
+      tags: [journal]
+      summary: Update a journal entry
+      parameters:
+        - name: characterId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: entryId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateJournalEntryRequest"
+      responses:
+        "200":
+          description: Journal entry updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JournalEntry"
+    delete:
+      operationId: deleteJournalEntry
+      tags: [journal]
+      summary: Delete a journal entry
+      parameters:
+        - name: characterId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: entryId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Journal entry deleted
+
+  /parties:
+    get:
+      operationId: listParties
+      tags: [parties]
+      summary: List all parties
+      responses:
+        "200":
+          description: List of parties
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Party"
+    post:
+      operationId: createParty
+      tags: [parties]
+      summary: Create a new party
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreatePartyRequest"
+      responses:
+        "201":
+          description: Party created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Party"
+
+  /parties/{partyId}/quests:
+    get:
+      operationId: listQuests
+      tags: [quests]
+      summary: List quests for a party
+      parameters:
+        - name: partyId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [active, completed, failed]
+      responses:
+        "200":
+          description: List of quests
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Quest"
+    post:
+      operationId: createQuest
+      tags: [quests]
+      summary: Create a new quest for a party
+      parameters:
+        - name: partyId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateQuestRequest"
+      responses:
+        "201":
+          description: Quest created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Quest"
+
+  /parties/{partyId}/quests/{questId}:
+    get:
+      operationId: getQuest
+      tags: [quests]
+      summary: Get a specific quest
+      parameters:
+        - name: partyId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: questId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Quest found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Quest"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    put:
+      operationId: updateQuest
+      tags: [quests]
+      summary: Update a quest
+      parameters:
+        - name: partyId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: questId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateQuestRequest"
+      responses:
+        "200":
+          description: Quest updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Quest"
+    delete:
+      operationId: deleteQuest
+      tags: [quests]
+      summary: Delete a quest
+      parameters:
+        - name: partyId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: questId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Quest deleted
+
+  /dm/overview:
+    get:
+      operationId: getDmOverview
+      tags: [dm]
+      summary: Get all characters with their items for DM view
+      responses:
+        "200":
+          description: DM overview with all characters and items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CharacterWithItems"
+
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
+
+    Character:
+      type: object
+      properties:
+        id:
+          type: integer
+        partyId:
+          type: integer
+          nullable: true
+        name:
+          type: string
+        playerName:
+          type: string
+        characterClass:
+          type: string
+        race:
+          type: string
+        level:
+          type: integer
+        summary:
+          type: string
+          nullable: true
+        avatarUrl:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - name
+        - playerName
+        - characterClass
+        - race
+        - level
+        - createdAt
+        - updatedAt
+
+    CharacterWithItems:
+      type: object
+      properties:
+        id:
+          type: integer
+        partyId:
+          type: integer
+          nullable: true
+        name:
+          type: string
+        playerName:
+          type: string
+        characterClass:
+          type: string
+        race:
+          type: string
+        level:
+          type: integer
+        summary:
+          type: string
+          nullable: true
+        avatarUrl:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/InventoryItem"
+      required:
+        - id
+        - name
+        - playerName
+        - characterClass
+        - race
+        - level
+        - createdAt
+        - updatedAt
+        - items
+
+    CreateCharacterRequest:
+      type: object
+      properties:
+        partyId:
+          type: integer
+          nullable: true
+        name:
+          type: string
+        playerName:
+          type: string
+        characterClass:
+          type: string
+        race:
+          type: string
+        level:
+          type: integer
+        summary:
+          type: string
+          nullable: true
+        avatarUrl:
+          type: string
+          nullable: true
+      required:
+        - name
+        - playerName
+        - characterClass
+        - race
+        - level
+
+    InventoryItem:
+      type: object
+      properties:
+        id:
+          type: integer
+        characterId:
+          type: integer
+        name:
+          type: string
+        category:
+          type: string
+          enum:
+            - weapons
+            - armor
+            - magic_items
+            - scrolls
+            - potions
+            - misc
+        description:
+          type: string
+        notes:
+          type: string
+          nullable: true
+        imageUrl:
+          type: string
+          nullable: true
+        quantity:
+          type: integer
+        location:
+          type: string
+          enum: [equipped, carried, stored]
+        isEquipped:
+          type: boolean
+        maxCharges:
+          type: integer
+          nullable: true
+        currentCharges:
+          type: integer
+          nullable: true
+        rechargeOn:
+          type: string
+          enum: [short_rest, long_rest, dawn, never]
+          nullable: true
+        rarity:
+          type: string
+          enum: [common, uncommon, rare, very_rare, legendary]
+          nullable: true
+        isConsumable:
+          type: boolean
+        isConsumed:
+          type: boolean
+        isTrashed:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - characterId
+        - name
+        - category
+        - description
+        - quantity
+        - location
+        - isEquipped
+        - isConsumable
+        - isConsumed
+        - isTrashed
+        - createdAt
+        - updatedAt
+
+    CreateItemRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        category:
+          type: string
+          enum:
+            - weapons
+            - armor
+            - magic_items
+            - scrolls
+            - potions
+            - misc
+        description:
+          type: string
+        notes:
+          type: string
+          nullable: true
+        imageUrl:
+          type: string
+          nullable: true
+        quantity:
+          type: integer
+        location:
+          type: string
+          enum: [equipped, carried, stored]
+        isEquipped:
+          type: boolean
+        maxCharges:
+          type: integer
+          nullable: true
+        currentCharges:
+          type: integer
+          nullable: true
+        rechargeOn:
+          type: string
+          enum: [short_rest, long_rest, dawn, never]
+          nullable: true
+        rarity:
+          type: string
+          enum: [common, uncommon, rare, very_rare, legendary]
+          nullable: true
+        isConsumable:
+          type: boolean
+      required:
+        - name
+        - category
+        - description
+        - isConsumable
+
+    UpdateItemRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        category:
+          type: string
+          enum:
+            - weapons
+            - armor
+            - magic_items
+            - scrolls
+            - potions
+            - misc
+        description:
+          type: string
+        notes:
+          type: string
+          nullable: true
+        imageUrl:
+          type: string
+          nullable: true
+        quantity:
+          type: integer
+        location:
+          type: string
+          enum: [equipped, carried, stored]
+        isEquipped:
+          type: boolean
+        maxCharges:
+          type: integer
+          nullable: true
+        currentCharges:
+          type: integer
+          nullable: true
+        rechargeOn:
+          type: string
+          enum: [short_rest, long_rest, dawn, never]
+          nullable: true
+        rarity:
+          type: string
+          enum: [common, uncommon, rare, very_rare, legendary]
+          nullable: true
+        isConsumable:
+          type: boolean
+
+    MoveItemRequest:
+      type: object
+      properties:
+        location:
+          type: string
+          enum: [equipped, carried, stored]
+      required:
+        - location
+
+    RestRequest:
+      type: object
+      properties:
+        restType:
+          type: string
+          enum: [short_rest, long_rest]
+      required:
+        - restType
+
+    JournalEntry:
+      type: object
+      properties:
+        id:
+          type: integer
+        characterId:
+          type: integer
+        title:
+          type: string
+        body:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - characterId
+        - title
+        - body
+        - createdAt
+        - updatedAt
+
+    CreateJournalEntryRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        body:
+          type: string
+      required:
+        - title
+        - body
+
+    Party:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - name
+        - createdAt
+
+    CreatePartyRequest:
+      type: object
+      properties:
+        name:
+          type: string
+      required:
+        - name
+
+    Quest:
+      type: object
+      properties:
+        id:
+          type: integer
+        partyId:
+          type: integer
+          nullable: true
+        title:
+          type: string
+        description:
+          type: string
+        status:
+          type: string
+          enum: [active, completed, failed]
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - title
+        - description
+        - status
+        - createdAt
+        - updatedAt
+
+    CreateQuestRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        status:
+          type: string
+          enum: [active, completed, failed]
+      required:
+        - title
+        - description
+
+    UpdateQuestRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        status:
+          type: string
+          enum: [active, completed, failed]

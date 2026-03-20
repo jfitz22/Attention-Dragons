@@ -1,0 +1,56 @@
+Here’s a refined, structured prompt optimized for an AI agent to build from:
+
+Project: Attention Dragons — Player Character Hub (Phase 1: Inventory System)
+Overview
+Build a multi-player web app called Attention Dragons where each player in a tabletop RPG party has their own personal character hub. The app should be architected to expand modularly over time (future modules: quest tracker, NPC messaging, downtime storylines, follower tracking, etc.). Phase 1 focuses entirely on the Inventory System.
+
+Architecture Requirements
+	∙	Each player accesses their own isolated instance/page tied to their character
+	∙	Component-based, modular architecture so new hub features (quests, messages, etc.) can be added as separate modules without refactoring
+	∙	Data persistence per player/character
+	∙	Mobile-friendly
+
+Inventory System — Core Concept
+The inventory is themed as an extradimensional storage chamber — think a magical bag of holding that the character walks into. Inside, they see their gear organized on weapon racks, armor stands, alchemy tables, potion shelves, and scroll cases. The UI should evoke this fantasy space visually.
+
+Card-Based UI
+Each inventory item is displayed as a stylized card with:
+	∙	Item image (uploadable or placeholder fantasy art)
+	∙	Fantasy-appropriate item name
+	∙	Item description — what it is and what it does
+	∙	Item category — auto-sorted into categories with fantasy-equivalent labels (e.g., “Arms & Armaments” for weapons, “Vestments” for armor, “Curios & Trinkets” for misc magic items, “Arcane Scrolls” for single-use ability scrolls, “Alchemical Stores” for potions, etc.)
+	∙	Equipped vs. Stored status — visually distinct states showing what’s currently on the character vs. in storage
+
+Charges & Uses Tracking
+	∙	Items with limited uses or charges display a charge tracker (pip system or counter)
+	∙	Each item has a configured recharge condition: Short Rest, Long Rest, Dawn, or Never (consumable)
+	∙	Player can trigger a Short Rest or Long Rest button that automatically recharges all eligible items
+	∙	Consumable items (scrolls, potions, single-use items) have a “Use/Consume” button
+	∙	On consumption: item moves to a “Consumed” section OR is permanently deleted, based on D&D rules for that item type (configurable per item)
+
+Item Management
+	∙	Players can add new items via a form/modal with all card fields
+	∙	Players can edit existing items
+	∙	Items are automatically sorted into their appropriate category
+	∙	Manual reordering within categories is a nice-to-have
+	∙	A search or filter bar to quickly find items by name or category
+
+Visual & Thematic Direction
+	∙	Dark fantasy aesthetic — deep purples, aged parchment, arcane glows, leather and wood textures
+	∙	Card design should feel like physical objects (scrolls, spell tomes, wooden item tags)
+	∙	Subtle animations welcome (card flip on use, glow on equipped items, dust/shimmer on the extradimensional space background)
+	∙	Fonts should feel fantasy-adjacent but remain legible
+
+Data Model (per item)
+
+{
+  id, characterId, name, category, description, imageUrl,
+  isEquipped, maxCharges, currentCharges, rechargeOn (short/long/dawn/none),
+  isConsumable, isConsumed, isTrashed, createdAt
+}
+
+
+Stretch Goals (Phase 1)
+	∙	Drag-and-drop card organization
+	∙	Item rarity color-coding (Common → Legendary)
+	∙	Dice roll integration on item cards that have attack/damage stats​​​​​​​​​​​​​​​​
