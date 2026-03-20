@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "Attention Dragons"
+version = "1.0.0"
+id = "artifacts/attention-dragons"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+localPort = 23982
+name = "web"
+paths = ["/"]
+
+[services.development]
+run = "pnpm --filter @workspace/attention-dragons run dev"
+
+[services.env]
+PORT = "23982"
+BASE_PATH = "/"
+
+[services.production]
+build = ["pnpm", "--filter", "@workspace/attention-dragons", "run", "build"]
+publicDir = "artifacts/attention-dragons/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"

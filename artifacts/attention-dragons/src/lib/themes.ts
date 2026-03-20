@@ -1,0 +1,223 @@
+export type ThemeId = 'arcane' | 'tavern' | 'tome' | 'apothecary' | 'armory' | 'grove';
+export type ParticleType = 'embers' | 'runes' | 'bubbles' | 'sparks' | 'leaves' | 'none';
+
+export interface Theme {
+  id: ThemeId;
+  name: string;
+  tagline: string;
+  emoji: string;
+  fontDisplayFamily: string;
+  fontSansFamily: string;
+  cssVars: Record<string, string>;
+  particleType: ParticleType;
+  backgroundGradient: string;
+  accentGlowColor: string;
+  cardStyle: 'obsidian' | 'wood' | 'parchment' | 'glass' | 'iron' | 'bark';
+}
+
+export const THEMES: Theme[] = [
+  {
+    id: 'arcane',
+    name: 'Arcane Vault',
+    tagline: 'The deep magic default',
+    emoji: '🔮',
+    fontDisplayFamily: 'Cinzel',
+    fontSansFamily: 'Playfair Display',
+    cssVars: {
+      '--background': '260 40% 5%',
+      '--foreground': '45 30% 85%',
+      '--card': '260 25% 10%',
+      '--card-foreground': '45 20% 90%',
+      '--card-border': '40 40% 25%',
+      '--primary': '40 80% 55%',
+      '--primary-foreground': '260 40% 10%',
+      '--secondary': '260 30% 15%',
+      '--secondary-foreground': '45 30% 85%',
+      '--muted': '260 20% 12%',
+      '--muted-foreground': '260 10% 60%',
+      '--accent': '280 80% 60%',
+      '--accent-foreground': '0 0% 100%',
+      '--destructive': '350 80% 45%',
+      '--destructive-foreground': '0 0% 100%',
+      '--border': '260 20% 20%',
+      '--input': '260 30% 12%',
+      '--ring': '40 80% 55%',
+    },
+    particleType: 'runes',
+    backgroundGradient:
+      'radial-gradient(ellipse 120% 80% at 50% -10%, hsl(270 60% 14%) 0%, hsl(260 40% 5%) 60%, hsl(260 50% 3%) 100%)',
+    accentGlowColor: '280 80% 60%',
+    cardStyle: 'obsidian',
+  },
+  {
+    id: 'tavern',
+    name: 'The Tavern',
+    tagline: 'Warm hearths & old tales',
+    emoji: '🍺',
+    fontDisplayFamily: 'Pirata One',
+    fontSansFamily: 'Lora',
+    cssVars: {
+      '--background': '25 40% 5%',
+      '--foreground': '35 50% 88%',
+      '--card': '25 35% 10%',
+      '--card-foreground': '35 40% 90%',
+      '--card-border': '30 50% 22%',
+      '--primary': '30 90% 55%',
+      '--primary-foreground': '25 50% 8%',
+      '--secondary': '25 25% 16%',
+      '--secondary-foreground': '35 50% 88%',
+      '--muted': '25 20% 13%',
+      '--muted-foreground': '25 15% 58%',
+      '--accent': '15 85% 55%',
+      '--accent-foreground': '0 0% 100%',
+      '--destructive': '0 75% 45%',
+      '--destructive-foreground': '0 0% 100%',
+      '--border': '25 25% 22%',
+      '--input': '25 25% 13%',
+      '--ring': '30 90% 55%',
+    },
+    particleType: 'embers',
+    backgroundGradient:
+      'radial-gradient(ellipse 100% 70% at 30% 110%, hsl(20 65% 13%) 0%, hsl(25 40% 5%) 55%, hsl(25 40% 3%) 100%)',
+    accentGlowColor: '30 90% 55%',
+    cardStyle: 'wood',
+  },
+  {
+    id: 'tome',
+    name: "Wizard's Tome",
+    tagline: 'Knowledge is the greatest power',
+    emoji: '📖',
+    fontDisplayFamily: 'Uncial Antiqua',
+    fontSansFamily: 'IM Fell English',
+    cssVars: {
+      '--background': '220 55% 4%',
+      '--foreground': '210 30% 88%',
+      '--card': '220 45% 8%',
+      '--card-foreground': '210 20% 92%',
+      '--card-border': '200 40% 22%',
+      '--primary': '190 90% 55%',
+      '--primary-foreground': '220 50% 8%',
+      '--secondary': '220 35% 14%',
+      '--secondary-foreground': '210 30% 88%',
+      '--muted': '220 25% 11%',
+      '--muted-foreground': '220 10% 58%',
+      '--accent': '260 80% 65%',
+      '--accent-foreground': '0 0% 100%',
+      '--destructive': '340 75% 45%',
+      '--destructive-foreground': '0 0% 100%',
+      '--border': '220 25% 20%',
+      '--input': '220 35% 11%',
+      '--ring': '190 90% 55%',
+    },
+    particleType: 'runes',
+    backgroundGradient:
+      'radial-gradient(ellipse 140% 80% at 70% 10%, hsl(250 70% 12%) 0%, hsl(220 55% 4%) 55%, hsl(215 60% 3%) 100%)',
+    accentGlowColor: '190 90% 55%',
+    cardStyle: 'parchment',
+  },
+  {
+    id: 'apothecary',
+    name: "Alchemist's Apothecary",
+    tagline: 'Mix, brew, and transform',
+    emoji: '⚗️',
+    fontDisplayFamily: 'Philosopher',
+    fontSansFamily: 'Philosopher',
+    cssVars: {
+      '--background': '150 45% 4%',
+      '--foreground': '100 20% 88%',
+      '--card': '150 35% 8%',
+      '--card-foreground': '100 15% 92%',
+      '--card-border': '140 35% 20%',
+      '--primary': '140 75% 48%',
+      '--primary-foreground': '150 50% 5%',
+      '--secondary': '150 25% 14%',
+      '--secondary-foreground': '100 20% 88%',
+      '--muted': '150 20% 10%',
+      '--muted-foreground': '150 10% 55%',
+      '--accent': '60 80% 50%',
+      '--accent-foreground': '0 0% 10%',
+      '--destructive': '350 75% 45%',
+      '--destructive-foreground': '0 0% 100%',
+      '--border': '150 20% 18%',
+      '--input': '150 25% 10%',
+      '--ring': '140 75% 48%',
+    },
+    particleType: 'bubbles',
+    backgroundGradient:
+      'radial-gradient(ellipse 100% 90% at 50% 110%, hsl(160 55% 10%) 0%, hsl(150 45% 4%) 55%, hsl(150 50% 2%) 100%)',
+    accentGlowColor: '140 75% 48%',
+    cardStyle: 'glass',
+  },
+  {
+    id: 'armory',
+    name: "Knight's Armory",
+    tagline: 'Steel, honor, and glory',
+    emoji: '⚔️',
+    fontDisplayFamily: 'Cinzel Decorative',
+    fontSansFamily: 'Josefin Sans',
+    cssVars: {
+      '--background': '0 8% 5%',
+      '--foreground': '0 5% 88%',
+      '--card': '0 8% 10%',
+      '--card-foreground': '0 5% 92%',
+      '--card-border': '0 35% 22%',
+      '--primary': '0 85% 55%',
+      '--primary-foreground': '0 8% 8%',
+      '--secondary': '0 8% 15%',
+      '--secondary-foreground': '0 5% 88%',
+      '--muted': '0 6% 12%',
+      '--muted-foreground': '0 5% 55%',
+      '--accent': '40 80% 50%',
+      '--accent-foreground': '0 0% 10%',
+      '--destructive': '0 85% 40%',
+      '--destructive-foreground': '0 0% 100%',
+      '--border': '0 8% 20%',
+      '--input': '0 8% 12%',
+      '--ring': '0 85% 55%',
+    },
+    particleType: 'sparks',
+    backgroundGradient:
+      'radial-gradient(ellipse 80% 60% at 50% 50%, hsl(0 12% 10%) 0%, hsl(0 8% 5%) 60%, hsl(0 10% 3%) 100%)',
+    accentGlowColor: '0 85% 55%',
+    cardStyle: 'iron',
+  },
+  {
+    id: 'grove',
+    name: "Druid's Grove",
+    tagline: "Nature's ancient wisdom",
+    emoji: '🌿',
+    fontDisplayFamily: 'Metamorphous',
+    fontSansFamily: 'Lato',
+    cssVars: {
+      '--background': '120 30% 4%',
+      '--foreground': '80 25% 88%',
+      '--card': '120 25% 8%',
+      '--card-foreground': '80 20% 92%',
+      '--card-border': '90 30% 18%',
+      '--primary': '80 60% 48%',
+      '--primary-foreground': '120 40% 5%',
+      '--secondary': '120 20% 13%',
+      '--secondary-foreground': '80 25% 88%',
+      '--muted': '120 15% 10%',
+      '--muted-foreground': '100 10% 55%',
+      '--accent': '40 65% 45%',
+      '--accent-foreground': '0 0% 100%',
+      '--destructive': '350 70% 45%',
+      '--destructive-foreground': '0 0% 100%',
+      '--border': '100 15% 18%',
+      '--input': '120 20% 10%',
+      '--ring': '80 60% 48%',
+    },
+    particleType: 'leaves',
+    backgroundGradient:
+      'radial-gradient(ellipse 120% 80% at 20% 20%, hsl(130 40% 10%) 0%, hsl(120 30% 4%) 55%, hsl(120 35% 2%) 100%)',
+    accentGlowColor: '80 60% 48%',
+    cardStyle: 'bark',
+  },
+];
+
+export const DEFAULT_THEME_ID: ThemeId = 'arcane';
+
+export function getTheme(id: ThemeId): Theme {
+  return THEMES.find((t) => t.id === id) ?? THEMES[0];
+}

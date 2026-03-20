@@ -1,0 +1,130 @@
+I want to transform this existing Party Tracker project from a frontend-only prototype into a real full-stack web app with persistent data.
+
+Important constraints:
+- This project already has a UI that I like.
+- Do not rebuild the app from scratch.
+- Do not redesign or replace the current UI layout or styling unless absolutely necessary for functionality.
+- Treat the existing frontend as the visual source of truth and upgrade the data architecture underneath it.
+
+Your role:
+Act like a senior full-stack engineer taking over a promising prototype built by a junior developer. Your job is to preserve the good UI work, analyze the current codebase carefully, and evolve it into a production-minded full-stack app in a logical, low-risk way.
+
+Project goal:
+Convert the app from using mock data / local state into a real architecture:
+
+Frontend UI
+→ Backend API
+→ PostgreSQL database using Replit SQL Database
+→ Persistent data that survives refreshes and sessions
+
+Core product requirements:
+This app is for a tabletop RPG party.
+
+Players need to be able to:
+- open the app on phone or laptop
+- find their character
+- view and update inventory
+- move items between equipped, bag, and storage
+- edit item descriptions
+- track charges and max charges on items
+- use recharge actions
+- create and edit journal entries
+- view a quest log
+
+The DM needs to be able to:
+- view all characters
+- open and edit any character
+- add, edit, move, or remove items
+- adjust charges
+- manage quests
+
+Data model requirements:
+Create and use a PostgreSQL schema with at least these tables:
+
+parties
+- id
+- name
+- created_at
+
+characters
+- id
+- party_id
+- name
+- class_name
+- level
+- summary
+- created_at
+- updated_at
+
+items
+- id
+- character_id
+- name
+- quantity
+- location
+- description
+- charges
+- max_charges
+- notes
+- created_at
+- updated_at
+
+journal_entries
+- id
+- character_id
+- title
+- body
+- created_at
+- updated_at
+
+quests
+- id
+- party_id
+- title
+- description
+- status
+- created_at
+- updated_at
+
+Rules for implementation:
+- Database must become the single source of truth.
+- Remove or replace any fake in-memory data stores and mock arrays once the real API is connected.
+- Keep the code simple, readable, and maintainable.
+- Do not overengineer.
+- Preserve the existing app structure where reasonable.
+
+How I want you to work:
+1. First analyze the current codebase before making major changes.
+2. Identify where the current frontend is using mock data, local arrays, or temporary state as persistent data.
+3. Propose a migration plan before implementing.
+4. Then implement in clear stages:
+   Stage A: backend and database setup
+   Stage B: schema creation and DB connection
+   Stage C: API routes for characters, items, journal entries, and quests
+   Stage D: connect the frontend to the API without changing the visual design
+   Stage E: verify persistence and fix any broken flows
+5. After each stage, explain:
+   - what changed
+   - which files changed
+   - how to test it
+   - what risks or tradeoffs remain
+
+Verification requirements:
+Do not consider this complete until the following are true:
+- I can create or edit an item from the UI
+- refresh the page
+- and still see the saved change from the database
+
+Also verify:
+- charges persist correctly
+- item location changes persist correctly
+- items stay attached to the correct character
+- journal entries persist
+- quests persist
+
+Important implementation guidance:
+- Keep backend routes clean and conventional
+- Use environment variables / Replit Secrets correctly for DB connection
+- Make any necessary updates to replit.md so future changes follow this architecture
+- If there is a better place in the existing file structure for backend code, explain that decision before proceeding
+- If you are unsure about a part of the current codebase, inspect it first rather than guessing

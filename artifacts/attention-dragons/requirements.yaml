@@ -1,0 +1,21 @@
+packages:
+  "framer-motion": "For smooth transitions and magical UI animations"
+  "clsx": "Utility for constructing className strings conditionally"
+  "tailwind-merge": "Utility for merging tailwind classes safely"
+  "react-hook-form": "For robust form state management"
+  "@hookform/resolvers": "For integrating Zod validation with forms"
+
+images:
+  - path: "artifacts/attention-dragons/public/images/bg-chamber.png"
+    description: "Dark fantasy background, an arcane study or wizard's chamber, deep purples and shadows, dusty tomes, faint glowing magical runes, very atmospheric, soft focus"
+    aspect_ratio: "16:9"
+  - path: "artifacts/attention-dragons/public/images/parchment-texture.png"
+    description: "A dark aged parchment or worn black leather texture, subtle cracks and wear, suitable for an overlay on UI cards, very dark slate and brown tones"
+    aspect_ratio: "1:1"
+  - path: "artifacts/attention-dragons/public/images/avatar-placeholder.png"
+    description: "A mysterious hooded figure in silhouette, dark fantasy style, glowing eyes, stylized portrait"
+    aspect_ratio: "1:1"
+
+notes:
+  - The API proxy handles /api, so the client fetches relative URLs.
+  - @workspace/api-client-react provides all TanStack Query hooks.
